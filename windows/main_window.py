@@ -1,5 +1,6 @@
 from .base_window import BaseWindow
 from customtkinter import CTkLabel, CTkButton, CTkImage
+from utils.is_model import is_model
 from PIL import Image, ImageTk
 from ultralytics import YOLO
 import cv2
@@ -14,6 +15,10 @@ itsc_icon = ImageTk.PhotoImage(file=os.path.join('assets', 'itsc_logo.png'))
 Variable that saves the YOLO model path.
 '''
 model_path = os.path.join('models', 'TRAIN_1_BEST.pt')
+
+# Checking whether the given model path is valid.
+if not is_model(model_path):
+    raise Exception('The given model path is not valid.')
 
 class App(BaseWindow):
     '''

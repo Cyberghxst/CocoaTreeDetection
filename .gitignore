@@ -1,0 +1,5 @@
+# Ignora el folder del entorno virtual.
+.conda
+
+# Ignora las subcarpetas con nombre "__pycache__".
+**/__pycache__
