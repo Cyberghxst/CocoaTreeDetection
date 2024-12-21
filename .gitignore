@@ -3,3 +3,6 @@
 
 # Ignora las subcarpetas con nombre "__pycache__".
 **/__pycache__
+
+# Ignora la carpeta en la cual se guardan las capturas.
+shots

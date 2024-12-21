@@ -1,5 +1,5 @@
 from .base_window import BaseWindow
-from customtkinter import CTkLabel, CTkButton, CTkImage
+from customtkinter import CTkLabel, CTkButton, RIGHT, LEFT
 from utils.is_model import is_model
 from PIL import Image, ImageTk
 from ultralytics import YOLO
@@ -41,6 +41,23 @@ class App(BaseWindow):
         self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, float(self.width))
         self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, float(self.height))
 
+        # Creating a button to make shots.
+        self._shot_button = CTkButton(
+            master=self._window,
+            text='Capturar',
+            fg_color='green',
+            hover_color='#228B22'
+        )
+
+        # Creating a button to exit the program.
+        self._exit_button = CTkButton(
+            master=self._window,
+            text='Cerrar',
+            fg_color='#D22B2B',
+            hover_color='#D2042D',
+            command=self._window.quit
+        )
+
     def show(self):
         '''
         A function that shows the window.
@@ -62,21 +79,42 @@ class App(BaseWindow):
         # Bind a key to destroy the window.
         self._window.bind('<Escape>', lambda t: self._window.quit())
 
-        self._label.pack() 
-        self.open_camera()
+        self._label.pack() # Show the label.
+
+        # self._shot_button.place()
+        self._shot_button.pack(side=LEFT, padx=20, pady=50) # Show the "show" button.
+        self._exit_button.pack(side=RIGHT, padx=20, pady=50) # Show the "exit" button.
+
+        self.open_camera() # Opens the camera.
 
         self._window.mainloop() # Show the window.
 
     def open_camera(self):
-        _, frame = self.video_stream.read()
-        opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-        captured_image = Image.fromarray(opencv_image)
-        photo_image = ImageTk.PhotoImage(image=captured_image)
+        while True:
+            _, frame = self.video_stream.read()
+            opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            captured_image = Image.fromarray(opencv_image)
+            # photo_image = ImageTk.PhotoImage(image=captured_image)
 
-        self._label.photo_image = photo_image
-        self._label.configure(image=photo_image)
+            prediction = self._model.predict(captured_image, imgsz=640, conf=0.80)
+            annotation = prediction[0].plot(img=captured_image)
 
-        self._label.after(10, self.open_camera)
+            # self._label.photo_image = annotation
+            self._label.configure(image=annotation)
+
+            # self._label.after(10, self.open_camera)
+
+    def destroy_camera(self):
+        '''
+        Destroys the video stream.
+
+        Arguments:
+            This function is not intended to receive arguments.
+
+        Returns:
+            This function is not intended to return anything.
+        '''
+        self.video_stream.release()
 
 
 
