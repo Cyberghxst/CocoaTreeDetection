@@ -1,6 +1,8 @@
 from .base_window import BaseWindow
+from .error_dialog import ErrorDialog
 from customtkinter import CTkLabel, CTkButton, RIGHT, LEFT
-from utils.is_model import is_model
+from utils.fetch_last_model import fetch_last_model
+from picamera2 import Picamera2
 from PIL import Image, ImageTk
 from ultralytics import YOLO
 import cv2
@@ -10,15 +12,6 @@ import os
 Trick taken from: https://github.com/TomSchimansky/CustomTkinter/discussions/1099#discussioncomment-6507015
 '''
 itsc_icon = ImageTk.PhotoImage(file=os.path.join('assets', 'itsc_logo.png'))
-
-'''
-Variable that saves the YOLO model path.
-'''
-model_path = os.path.join('models', 'TRAIN_1_BEST.pt')
-
-# Checking whether the given model path is valid.
-if not is_model(model_path):
-    raise Exception('The given model path is not valid.')
 
 class App(BaseWindow):
     '''
@@ -30,16 +23,24 @@ class App(BaseWindow):
             width=640,
             height=640
         )
+
+        # Fetch the path of the last trained model.
+        self._model_path = fetch_last_model()
         
         # Set the YOLO model by path.
-        self._model = YOLO(model=model_path)
+        self._model = YOLO(model=self._model_path)
 
         self._label = CTkLabel(master=self._window, text='')
-        self.video_stream = cv2.VideoCapture(0) # Saves the video stream on the camera 0.
 
-        # Set the video width and height.
-        self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, float(self.width))
-        self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, float(self.height))
+        self.camera = Picamera2()
+        self.camera.configure(
+            self.camera.create_video_configuration(
+                main={
+                    'format': 'XRGB8888',
+                    'size': (self.width, self.height)
+                }
+            )
+        )
 
         # Creating a button to make shots.
         self._shot_button = CTkButton(
@@ -90,21 +91,53 @@ class App(BaseWindow):
         self._window.mainloop() # Show the window.
 
     def open_camera(self):
+        # Starts the camera.
+        self.camera.start()
+
         while True:
-            _, frame = self.video_stream.read()
-            opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-            captured_image = Image.fromarray(opencv_image)
-            # photo_image = ImageTk.PhotoImage(image=captured_image)
+            # RAW image captured by PiCamera.
+            raw_image = self.camera.capture_array()
 
-            prediction = self._model.predict(captured_image, imgsz=640, conf=0.80)
-            annotation = prediction[0].plot(img=captured_image)
+            # Coverting the raw image to an actual image.
+            captured_image = Image.fromarray(raw_image)
 
-            # self._label.photo_image = annotation
-            self._label.configure(image=annotation)
+            # Converting the captured image to a photo image.
+            photo_image = ImageTk.PhotoImage(image=captured_image)
 
-            # self._label.after(10, self.open_camera)
+            # Making the predictions with the loaded YOLO model.
+            # prediction = self._model.predict(photo_image, imgsz=640, conf=0.80)
 
-    def destroy_camera(self):
+            # Drawing the predicted boxes.
+            # annotation = prediction[0].plot()
+
+            # Show the predicted frame.
+            cv2.imshow(self.title, raw_image)
+
+            '''
+            if cv2.waitKey(1) == ord("q"):
+                cv2.imwrite("test_frame.png", raw_image)
+                break
+            '''
+
+            if cv2.waitKey(1) == ord('c') and raw_image.all() != None:
+                self.save_frame(raw_image)
+
+            # Checking if the camera is sending images.
+            if cv2.waitKey(1) != ord('q') and raw_image.all() == None:
+                # Creating an error dialog.
+                error_dialog = ErrorDialog(
+                    title='Error de Camara',
+                    error_message='La camara no envio imagen, envio "None" lo cual no deberia pasar.',
+                    master=self._window
+                )
+
+                # Showing the error dialog.
+                error_dialog.show()
+
+                # Break the loop. (end the program)
+                break
+
+    def destroy_camera(self) -> None:
         '''
         Destroys the video stream.
 
@@ -112,9 +145,38 @@ class App(BaseWindow):
             This function is not intended to receive arguments.
 
         Returns:
-            This function is not intended to return anything.
+            (None): This function is not intended to return anything.
         '''
         self.video_stream.release()
+
+    def save_frame(self, frame: any) -> None:
+        '''
+        Saves a frame to the "shots" folder.
+
+        Arguments:
+            This function is not intended to receive arguments.
+
+        Returns:
+            (None): This function is not intended to return anything.
+        '''
+        # Save the shots directory.
+        shots_dir = os.path.join(os.getcwd(), 'shots')
+
+        # Creating the shots directory if it does not exists.
+        if os.path.exists(shots_dir) == False:
+            os.mkdir(shots_dir)
+
+        # Save the file names of the "shots" dir in a list.
+        files = list(os.listdir(shots_dir))
+
+        # Get the amount of file inside the folder.
+        flength = len(files)
+
+        # Write the given frame into the "shots" folder.
+        cv2.imwrite(
+            filename=os.path.join(shots_dir, f'shot_{flength}.jpg'),
+            img=frame
+        )
 
 
 

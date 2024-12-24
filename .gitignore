@@ -6,3 +6,6 @@
 
 # Ignora la carpeta en la cual se guardan las capturas.
 shots
+
+# Ignora la carpeta de YOLO: "runs".
+runs
