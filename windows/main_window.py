@@ -30,8 +30,10 @@ class App(BaseWindow):
         # Set the YOLO model by path.
         self._model = YOLO(model=self._model_path)
 
+        # Creating a label to load the frames to it.
         self._label = CTkLabel(master=self._window, text='')
 
+        # Assign the PiCamera2 to a class attribute.
         self.camera = Picamera2()
         self.camera.configure(
             self.camera.create_video_configuration(
@@ -80,15 +82,17 @@ class App(BaseWindow):
         # Bind a key to destroy the window.
         self._window.bind('<Escape>', lambda t: self._window.quit())
 
-        self._label.pack() # Show the label.
+        # Show the label.
+        self._label.pack()
 
-        # self._shot_button.place()
         self._shot_button.pack(side=LEFT, padx=20, pady=50) # Show the "show" button.
         self._exit_button.pack(side=RIGHT, padx=20, pady=50) # Show the "exit" button.
 
-        self.open_camera() # Opens the camera.
+        # Opens the camera.
+        self.open_camera()
 
-        self._window.mainloop() # Show the window.
+        # Show the window.
+        self._window.mainloop()
 
     def open_camera(self):
         # Starts the camera.
@@ -119,6 +123,7 @@ class App(BaseWindow):
                 break
             '''
 
+            # Save the current frame when "c" is pressed.
             if cv2.waitKey(1) == ord('c') and raw_image.all() != None:
                 self.save_frame(raw_image)
 
@@ -136,18 +141,6 @@ class App(BaseWindow):
 
                 # Break the loop. (end the program)
                 break
-
-    def destroy_camera(self) -> None:
-        '''
-        Destroys the video stream.
-
-        Arguments:
-            This function is not intended to receive arguments.
-
-        Returns:
-            (None): This function is not intended to return anything.
-        '''
-        self.video_stream.release()
 
     def save_frame(self, frame: any) -> None:
         '''
