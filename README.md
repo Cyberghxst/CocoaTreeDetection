@@ -87,5 +87,5 @@ Location: /usr/lib/python3/dist-packages
 ```
 
 ## Disclaimer
-Any uncommented situation error / situation: try to google, you will almost find out everything by seeing the whole internet
+Any uncommented situation/error: try to google it, you will almost find out everything by seeing the whole internet
 (this is how I solved all the errors I got) :)
