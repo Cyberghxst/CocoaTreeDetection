@@ -9,3 +9,7 @@ shots
 
 # Ignora la carpeta de YOLO: "runs".
 runs
+
+# Ignora los modelos "NCNN".
+**/TRAIN_[0-9]*_BEST.torchscript
+**/TRAIN_[0-9]*_BEST_ncnn_model
