@@ -86,6 +86,25 @@ License: BSD 2-Clause License
 Location: /usr/lib/python3/dist-packages
 ```
 
+### Camera
+For this project, a generic camera module was used. It has a Sony IMX219 sensor (8 megapixels)
+You can buy it through [the following link](https://es.aliexpress.com/item/1005006297356747.html?spm=a2g0o.productlist.main.1.79d8XMx5XMx52a&algo_pvid=c9424126-9b67-4071-9412-fb38f46aff86&algo_exp_id=c9424126-9b67-4071-9412-fb38f46aff86-0&pdp_npi=4%40dis%21MXN%21278.51%21250.56%21%21%2113.55%2112.19%21%402103247417352518968927685e4528%2112000036658758852%21sea%21MX%210%21ABX&curPageLogUid=v0r4aV3c4Lyi&utparam-url=scene%3Asearch%7Cquery_from%3A).
+This camera must be used with the `libcamera` libraries, so, with that in mind, YOU MUST USE `picamera2` since this lib is based on libcamera. otherwise, it wont work (even trying everything using raw opencv)
+```bash
+(kokoa) raspi@raspi:~/Documents/CocoaTreeDetection $ libcamera-hello --list-cameras
+Available cameras
+-----------------
+0 : imx219 [3280x2464 10-bit RGGB] (/base/soc/i2c0mux/i2c@1/imx219@10)
+    Modes: 'SRGGB10_CSI2P' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
+                             1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
+                             1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
+                             3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
+           'SRGGB8' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
+                      1640x1232 [83.70 fps - (0, 0)/3280x2464 crop]
+                      1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
+                      3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
+```
+
 ## Disclaimer
 Any uncommented situation/error: try to google it, you will almost find out everything by seeing the whole internet
 (this is how I solved all the errors I got) :)
