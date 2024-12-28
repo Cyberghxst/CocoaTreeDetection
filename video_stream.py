@@ -28,7 +28,7 @@ results = model.predict(
 from utils.export_models import export_last_model
 from ultralytics import YOLO
 from PIL import Image
-import cv2, os
+import cv2, os, torch
 
 # Set the video name with extension.
 video_name = 'video_prueba.mp4'
@@ -65,10 +65,16 @@ def convert_avi_to_mp4(input_path, output_path):
 
         image = Image.fromarray(frame)
 
-        results = model(image)
-        annotation = results[0].plot()
-
-        out.write(annotation)
+        results = model.predict(
+            source=image,
+            task='detect',
+            stream=True,
+            device='0'
+        )
+    
+        for result in results:
+            annotation = result.plot()
+            out.write(annotation)
     
     # Release resources
     cap.release()
