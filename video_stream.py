@@ -1,30 +1,3 @@
-'''
-from utils.export_models import export_last_model
-from ultralytics import YOLO
-import cv2, os
-
-# Set the video name with extension.
-video_name = 'video_prueba.mp4'
-
-# Set the video path.
-video_path = os.path.join(os.getcwd(), 'video_samples', video_name)
-
-# Export the last model as NCNN and save the path.
-last_model_path = export_last_model()
-print(f'{last_model_path} ha sido seleccionado como el ultimo modelo entrenado.')
-
-# Load the YOLOv8 model
-model = YOLO(last_model_path)
-
-# Start the prediction using the video as source.
-results = model.predict(
-    source=video_path,
-    task='detect',
-    show=True,
-    stream=True
-)
-'''
-
 from utils.export_models import export_last_model
 from ultralytics import YOLO
 from PIL import Image
