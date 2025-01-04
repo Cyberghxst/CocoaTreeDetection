@@ -1,10 +1,10 @@
 from utils.export_models import export_last_model
 from ultralytics import YOLO
-import cv2, os
+import os
 
 
 # Set the video name with extension.
-image_name: str | list[str] = 'video_prueba.mp4'
+image_name: str | list[str] = 'sample.jpg'
 
 # Export the last model as NCNN and save the path.
 last_model_path = export_last_model()
