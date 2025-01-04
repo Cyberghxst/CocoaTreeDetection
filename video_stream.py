@@ -28,7 +28,7 @@ results = model.predict(
 from utils.export_models import export_last_model
 from ultralytics import YOLO
 from PIL import Image
-import cv2, os, torch
+import cv2, os
 
 # Set the video name with extension.
 video_name = 'video_prueba.mp4'
