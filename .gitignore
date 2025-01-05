@@ -12,6 +12,7 @@ runs
 
 # Ignora la carpeta con los videos de prueba.
 video_samples
+photo_samples
 
 # Ignora los modelos "NCNN".
 **/TRAIN_[0-9]*_BEST.torchscript
