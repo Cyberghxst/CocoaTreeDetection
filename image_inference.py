@@ -4,7 +4,7 @@ import os
 
 
 # Set the video name with extension.
-image_name: str | list[str] = 'sample.jpg'
+image_name: str | list[str] = 'IMG_20241126_161413.jpg'
 
 # Export the last model as NCNN and save the path.
 last_model_path = export_last_model()
@@ -18,12 +18,12 @@ def predict(dir: str):
     # Set the video path.
     image_path = os.path.join(os.getcwd(), 'photo_samples', dir)
 
-    # Save the results in a variable.
-    results = model.predict(
+    # Make the prediction.
+    model.predict(
         source=image_path,
         task='detect',
         show=True,
-        stream=True
+        save=True
     )
 
 # Predict images based on the variable type.
